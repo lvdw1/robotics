@@ -48,11 +48,11 @@ class Args:
     """the user or org name of the model repository from the Hugging Face Hub"""
 
     # Algorithm specific arguments
-    total_timesteps: int = 8000000
+    total_timesteps: int = 10000000
     """total timesteps of the experiments"""
-    learning_rate: float = 3e-4
+    learning_rate: float = 1e-4
     """the learning rate of the optimizer"""
-    num_envs: int = 10
+    num_envs: int = 20
     """the number of parallel game environments"""
     num_steps: int = 2048
     """the number of steps to run in each environment per policy rollout"""
@@ -92,11 +92,11 @@ class Args:
     # pendulum configuration
     name_config_file: str = "simulation_pendulum.yaml"
     """the name of the yaml configuration file of the pendulum"""
-    swingup: bool = False
+    swingup: bool = True
     """if toggled, the task will include the swingup task"""
 
 
-def make_env(urdf_path, forward_dynamics_casadi_path, parameters_model, render=False, swingup=False):
+def make_env(urdf_path, forward_dynamics_casadi_path, parameters_model, render=False, swingup=True):
     def thunk():
         env = gym.make('FurutaPendulumTorque-v0', urdf_model_path=urdf_path, 
                                       forward_dynamics_casadi_path=forward_dynamics_casadi_path, 
