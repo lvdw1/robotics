@@ -1,0 +1,6 @@
+gymnasium==0.28.1;  
+stable-baselines3==2.3.2; 
+tensorboard; 
+torch; 
+tyro; 
+standard-imghdr==3.13.0;

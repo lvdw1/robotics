@@ -1,0 +1,20 @@
+urdf_filename: "furuta_pendulum.urdf"
+forward_dynamics_casadi_filename: "forward_dynamics.casadi"
+
+parameters_model:
+  m1: 0.040466
+  m2: 0.009801
+  l1: 0.05415
+  l2: 0.096608
+  L1: 0.093525
+  L2: 0.129
+  J1: 5.96237099e-04
+  J2: 0.000014790595
+  b1: 1.16511498e-02
+  b2: 1.7905703040590617e-05
+
+  max_velocity_joint0: 22.0 # rad/s
+  max_velocity_joint1: 50.0 # rad/s
+  max_angle_joint0: 6.283185307179586 # rad
+  max_angle_joint1: 6.283185307179586 # rad
+  max_torque_joint0: 0.2 # Nm
