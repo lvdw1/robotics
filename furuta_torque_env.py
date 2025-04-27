@@ -4,9 +4,11 @@ import math
 import numpy as np
 import casadi as ca
 import matplotlib.pyplot as plt
+
 import pinocchio as pin
 from pinocchio.utils import *
 from pinocchio.visualize import MeshcatVisualizer as PMV
+
 import time
 
 class FurutaPendulumSimulator:
@@ -127,6 +129,16 @@ class FurutaPendulumTorqueEnv(gym.Env):
         self._max_angle_joint0 = parameters_model["max_angle_joint0"]
         self._max_angle_joint1 = parameters_model["max_angle_joint1"]
         self._max_torque_joint0 = parameters_model["max_torque_joint0"]
+
+
+        self.J2 = parameters_model["J2"]
+        self.J1 = parameters_model["J1"]
+        self.l2 = parameters_model["L2"]
+
+        self.m2 = parameters_model["m2"]
+        self.m1 = parameters_model["m1"]
+
+        self.g = 9.81
 
         self.action_space = spaces.Box(low=np.array([-1]), high=np.array([1]), dtype=np.float32)  # Action: motor torque [-1, 1]
 
@@ -250,5 +262,9 @@ class FurutaPendulumTorqueEnv(gym.Env):
             return reward_normalized
         
         else:
-            # print("Swingup reward function not implemented yet")
-            return 0.0
+            cos_th2 = obs[3] 
+            if cos_th2 < -0.76:
+                reward = -7 - cos_th2 + (1-cos_th2)**3
+            else:
+                reward = -0.2
+            return reward

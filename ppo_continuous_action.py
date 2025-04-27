@@ -48,11 +48,11 @@ class Args:
     """the user or org name of the model repository from the Hugging Face Hub"""
 
     # Algorithm specific arguments
-    total_timesteps: int = 8000000
+    total_timesteps: int = 10000000
     """total timesteps of the experiments"""
     learning_rate: float = 3e-4
     """the learning rate of the optimizer"""
-    num_envs: int = 10
+    num_envs: int = 25
     """the number of parallel game environments"""
     num_steps: int = 2048
     """the number of steps to run in each environment per policy rollout"""
@@ -92,11 +92,17 @@ class Args:
     # pendulum configuration
     name_config_file: str = "simulation_pendulum.yaml"
     """the name of the yaml configuration file of the pendulum"""
-    swingup: bool = False
+    swingup: bool = True
     """if toggled, the task will include the swingup task"""
 
 
-def make_env(urdf_path, forward_dynamics_casadi_path, parameters_model, render=False, swingup=False):
+def domain_randomisation(parameters):
+    randomized_params = {}
+    for param in parameters:
+        randomized_params[param] = parameters[param]*(1+random.uniform(-0.1,0.1))
+    return randomized_params
+
+def make_env(urdf_path, forward_dynamics_casadi_path, parameters_model, render=False, swingup=True):
     def thunk():
         env = gym.make('FurutaPendulumTorque-v0', urdf_model_path=urdf_path, 
                                       forward_dynamics_casadi_path=forward_dynamics_casadi_path, 
@@ -179,11 +185,14 @@ if __name__ == "__main__":
     with open(f'pendulum_description/{args.name_config_file}', 'r') as file:
         config = yaml.safe_load(file)
     parameters_model = config["parameters_model"]
+
+    # paremeters_model = domain_randomisation(parameters_model)
+
     urdf_path = os.path.join("pendulum_description", config["urdf_filename"])
     forward_dynamics_casadi_path = os.path.join("pendulum_description", config["forward_dynamics_casadi_filename"])
 
     envs = gym.vector.SyncVectorEnv(
-        [make_env(urdf_path=urdf_path, parameters_model=parameters_model, 
+        [make_env(urdf_path=urdf_path, parameters_model=domain_randomisation(parameters_model), 
                   forward_dynamics_casadi_path=forward_dynamics_casadi_path,
                   swingup=args.swingup) for _ in range(args.num_envs)]
     )
