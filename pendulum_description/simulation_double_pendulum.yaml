@@ -1,0 +1,39 @@
+urdf_filename: "double_pendulum.urdf"
+forward_dynamics_casadi_filename: "forward_dynamics_double.casadi"
+
+# Example Configuration for Double Pendulum
+parameters_model:
+  # Joint/Link 0 (Base Rotation)
+  m1: 0.5      # Mass of the rotating base structure (if relevant, might be part of J1)
+  L1: 0.1      # Length/radius associated with base rotation (if relevant)
+  J1: 0.01     # Inertia of the rotating base + motor assembly around Z-axis
+
+  # Joint/Link 1 (First Pendulum)
+  m2: 0.2      # Mass of the first pendulum link
+  L2: 0.3      # Length from base joint to CoM of first pendulum link
+  J2: 0.005    # Inertia of the first pendulum link about its CoM
+
+  # Joint/Link 2 (Second Pendulum) - NEW SECTION
+  m3: 0.15     # Mass of the second pendulum link
+  L3: 0.25     # Length from first pendulum joint to CoM of second pendulum link
+  J3: 0.003    # Inertia of the second pendulum link about its CoM
+
+  # Limits and Max Values
+  max_velocity_joint0: 30.0 # rad/s
+  max_velocity_joint1: 30.0 # rad/s
+  max_velocity_joint2: 30.0 # rad/s (NEW)
+
+  max_angle_joint0: 6.28 # rad (+/- 1 rotation absolute limit, maybe tighter)
+  max_angle_joint1: 6.28 # rad (observation scaling reference)
+  max_angle_joint2: 6.28 # rad (observation scaling reference)
+
+  max_torque_joint0: 2.0   # Nm (Max motor torque)
+
+  # Damping/Friction (Optional - Add if modeled in URDF/dynamics)
+  # damping_joint0: 0.01
+  # damping_joint1: 0.005
+  # damping_joint2: 0.005
+
+# --- UPDATE FILENAMES ---
+urdf_filename: "double_pendulum.urdf" # Your new URDF file name
+forward_dynamics_casadi_filename: "double_pendulum_forward_dynamics.casadi" # Your new CasADi function file name

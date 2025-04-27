@@ -41,12 +41,12 @@ class FurutaPendulumSimulator:
         self.viz.initViewer(open=False)
 
         self.viz.loadViewerModel()
-        q_init = np.array([0, 0])
+        q_init = np.array([0, 0, 0])
         self.viz.display(q_init)
 
         self.f_state_transition = FurutaPendulumSimulator.create_f_state_transition(forward_dynamics_casadi_path) 
 
-        self.x = np.array([0.0, 0.0, 0.0, 0.0])
+        self.x = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         self.x_hist = [self.x]
 
     @staticmethod
@@ -73,13 +73,13 @@ class FurutaPendulumSimulator:
     @staticmethod
     def create_f_state_transition(forward_dynamics_casadi_path):
         # Create state transition function from forward dynamics
-        q_sym = ca.MX.sym("q", 2)
-        dq_sym = ca.MX.sym("dq", 2)
+        q_sym = ca.MX.sym("q", 3)
+        dq_sym = ca.MX.sym("dq", 3)
         x_sym = ca.vertcat(q_sym, dq_sym)
         u_sym = ca.MX.sym("u")
 
         forward_dynamics = ca.Function.load(forward_dynamics_casadi_path)
-        ddq_sym = forward_dynamics(q_sym, dq_sym, ca.vertcat(u_sym,0))
+        ddq_sym = forward_dynamics(q_sym, dq_sym, ca.vertcat(u_sym,0,0))
         dx_sym = ca.vertcat(dq_sym, ddq_sym)
         dt_sym = ca.MX.sym("dt") 
 
@@ -105,27 +105,31 @@ class FurutaPendulumTorqueEnv(gym.Env):
                                                  render=render)
         
         if swingup:
-            self.init_qpos = np.array([0.0, 0.0])
+            self.init_qpos = np.array([0.0, 0.0, 0.0])
         else:
             # Start at upward position
-            self.init_qpos = np.array([0.0, np.pi])
+            self.init_qpos = np.array([0.0, np.pi, np.pi])
 
-        self.init_qvel = np.array([0.0, 0.0])
+        self.init_qvel = np.array([0.0, 0.0, 0.0])
 
-        self.pendulum_sim.x = np.array([self.init_qpos[0], self.init_qpos[1], self.init_qvel[0], self.init_qvel[1]])
+        self.pendulum_sim.x = np.array([self.init_qpos[0], self.init_qpos[1], self.init_qpos[2], self.init_qvel[0], self.init_qvel[1], self.init_qvel[2]])
         self.qpos = np.array([
             self.pendulum_sim.x[0],
-            self.pendulum_sim.x[1]
+            self.pendulum_sim.x[1],
+            self.pendulum_sim.x[2]
         ])
         self.qvel = np.array([
-            self.pendulum_sim.x[2],
-            self.pendulum_sim.x[3]
+            self.pendulum_sim.x[3],
+            self.pendulum_sim.x[4],
+            self.pendulum_sim.x[5]
         ])
 
         self._max_velocity_joint0 = parameters_model["max_velocity_joint0"]
         self._max_velocity_joint1 = parameters_model["max_velocity_joint1"]
+        self._max_velocity_joint2 = parameters_model["max_velocity_joint2"]
         self._max_angle_joint0 = parameters_model["max_angle_joint0"]
         self._max_angle_joint1 = parameters_model["max_angle_joint1"]
+        self._max_angle_joint2 = parameters_model["max_angle_joint2"]
         self._max_torque_joint0 = parameters_model["max_torque_joint0"]
 
         self.action_space = spaces.Box(low=np.array([-1]), high=np.array([1]), dtype=np.float32)  # Action: motor torque [-1, 1]
@@ -159,11 +163,13 @@ class FurutaPendulumTorqueEnv(gym.Env):
         self.pendulum_sim.step(u, self.dt)
         self.qpos = np.array([
             self.pendulum_sim.x[0],
-            self.pendulum_sim.x[1]
+            self.pendulum_sim.x[1],
+            self.pendulum_sim.x[2]
         ])
         self.qvel = np.array([
-            self.pendulum_sim.x[2],
-            self.pendulum_sim.x[3]
+            self.pendulum_sim.x[3],
+            self.pendulum_sim.x[4],
+            self.pendulum_sim.x[5]
         ])
         obs = self._get_obs()
         reward = self.calculate_reward(obs, action)
@@ -186,9 +192,9 @@ class FurutaPendulumTorqueEnv(gym.Env):
         qpos = self.init_qpos
         qvel = self.init_qvel
 
-        self.pendulum_sim.x = np.array([qpos[0], qpos[1], qvel[0], qvel[1]])
-        self.qpos = np.array([qpos[0], qpos[1]])
-        self.qvel = np.array([qvel[0], qvel[1]])
+        self.pendulum_sim.x = np.array([qpos[0], qpos[1], qpos[2], qvel[0], qvel[1], qvel[2]])
+        self.qpos = np.array([qpos[0], qpos[1], qpos[2]])
+        self.qvel = np.array([qvel[0], qvel[1], qvel[2]])
 
         self.time_step = 0
 

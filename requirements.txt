@@ -4,3 +4,4 @@ tensorboard;
 torch; 
 tyro; 
 standard-imghdr==3.13.0;
+rockit-meco;
