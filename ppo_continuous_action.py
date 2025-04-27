@@ -50,9 +50,9 @@ class Args:
     # Algorithm specific arguments
     total_timesteps: int = 10000000
     """total timesteps of the experiments"""
-    learning_rate: float = 1e-4
+    learning_rate: float = 3e-4
     """the learning rate of the optimizer"""
-    num_envs: int = 20
+    num_envs: int = 25
     """the number of parallel game environments"""
     num_steps: int = 2048
     """the number of steps to run in each environment per policy rollout"""

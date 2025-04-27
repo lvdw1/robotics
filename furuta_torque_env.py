@@ -262,29 +262,9 @@ class FurutaPendulumTorqueEnv(gym.Env):
             return reward_normalized
         
         else:
-            w_th1 = 0.0
-            w_th2 = 10.0
-
-            w_dth1 = 5.0
-            w_dth2 = 5.0
-            w_a = 0.0
-
-            sin_th2, cos_th2 = obs[2], obs[3]
-            dth1_norm, dth2_norm = obs[4], obs[5]
-
-            E = 0.5 * self.J2 * (dth2_norm * self._max_velocity_joint1)**2 + self.m2 * self.g * self.l2 * (1 - cos_th2) + 0.5 * self.J1 * (dth1_norm * self._max_velocity_joint0)**2
-            E_target = 2 * self.m2 * self.g * self.l2
-            R_energy = - abs(E - E_target) / E_target
-
-            R_stab = -( w_th2 * cos_th2 ) # you want cosine to be -1
-
-            R_act = -w_a * a[0]**2
-
-            k = 4
-            alpha = 0.5 * (1 - np.tanh(k * cos_th2))
-
-            reward = alpha * R_energy + (1 - alpha) * R_stab + R_act
-
-            reward += 1.0 if abs(cos_th2 + 1) < 0.01 and abs(dth2_norm) < 0.05 else 0.0
-
+            cos_th2 = obs[3] 
+            if cos_th2 < -0.76:
+                reward = -7 - cos_th2 + (1-cos_th2)**3
+            else:
+                reward = -0.2
             return reward
