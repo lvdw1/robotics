@@ -20,7 +20,7 @@ gym.register(
 env = gym.make("FurutaPendulumTorque-v0",
                urdf_model_path=urdf_path, forward_dynamics_casadi_path=forward_dynamics_casadi_path, parameters_model=parameters_model, render=True, swingup=True)
 
-saved_model_path = 'furuta_pendulum_tensorboard/furutaTorque__ppo_continuous_action__42__1745757948/ppo_continuous_action.cleanrl_model' 
+saved_model_path = 'furuta_pendulum_tensorboard/furutaTorque__ppo_continuous_action__42__1745760168/ppo_continuous_action.cleanrl_model' 
 
 swingup = True
 

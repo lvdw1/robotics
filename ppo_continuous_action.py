@@ -96,6 +96,12 @@ class Args:
     """if toggled, the task will include the swingup task"""
 
 
+def domain_randomisation(parameters):
+    randomized_params = {}
+    for param in parameters:
+        randomized_params[param] = parameters[param]*(1+random.uniform(-0.1,0.1))
+    return randomized_params
+
 def make_env(urdf_path, forward_dynamics_casadi_path, parameters_model, render=False, swingup=True):
     def thunk():
         env = gym.make('FurutaPendulumTorque-v0', urdf_model_path=urdf_path, 
@@ -179,11 +185,14 @@ if __name__ == "__main__":
     with open(f'pendulum_description/{args.name_config_file}', 'r') as file:
         config = yaml.safe_load(file)
     parameters_model = config["parameters_model"]
+
+    # paremeters_model = domain_randomisation(parameters_model)
+
     urdf_path = os.path.join("pendulum_description", config["urdf_filename"])
     forward_dynamics_casadi_path = os.path.join("pendulum_description", config["forward_dynamics_casadi_filename"])
 
     envs = gym.vector.SyncVectorEnv(
-        [make_env(urdf_path=urdf_path, parameters_model=parameters_model, 
+        [make_env(urdf_path=urdf_path, parameters_model=domain_randomisation(parameters_model), 
                   forward_dynamics_casadi_path=forward_dynamics_casadi_path,
                   swingup=args.swingup) for _ in range(args.num_envs)]
     )
